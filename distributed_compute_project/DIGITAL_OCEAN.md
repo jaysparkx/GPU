@@ -16,7 +16,7 @@ This guide explains how to deploy the head node on a Digital Ocean droplet and c
 SSH into your new droplet:
 
 ```bash
-ssh root@YOUR_DROPLET_IP
+ssh root@143.110.246.120
 ```
 
 Install Docker and Docker Compose:
@@ -44,8 +44,8 @@ From your local machine:
 # Clone the repo if you haven't already
 git clone https://github.com/yourusername/distributed_compute_project.git
 
-# Upload to Digital Ocean (replace with your droplet IP)
-scp -r distributed_compute_project root@YOUR_DROPLET_IP:~/
+# Upload to Digital Ocean
+scp -r distributed_compute_project root@143.110.246.120:~/
 ```
 
 ## 4. Deploy on Digital Ocean
@@ -53,7 +53,7 @@ scp -r distributed_compute_project root@YOUR_DROPLET_IP:~/
 SSH into your droplet again:
 
 ```bash
-ssh root@YOUR_DROPLET_IP
+ssh root@143.110.246.120
 ```
 
 Navigate to the project and deploy:
@@ -76,9 +76,9 @@ On your local machine:
 1. Edit `docker-compose.provider.yml` to use your Digital Ocean IP:
    ```yaml
    environment:
-     - DO_SERVER_IP=YOUR_DROPLET_IP
-     - HEAD_NODE=YOUR_DROPLET_IP 
-     - REDIS_HOST=YOUR_DROPLET_IP
+     - DO_SERVER_IP=143.110.246.120
+     - HEAD_NODE=143.110.246.120 
+     - REDIS_HOST=143.110.246.120
    ```
 
 2. Run the provider:
@@ -93,7 +93,7 @@ Run the test script:
 
 ```bash
 cd distributed_compute_project
-python test_matrix_multiply_remote.py --server YOUR_DROPLET_IP
+python test_matrix_multiply_remote.py --server 143.110.246.120
 ```
 
 ## Troubleshooting

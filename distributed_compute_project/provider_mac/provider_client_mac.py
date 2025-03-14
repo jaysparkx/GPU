@@ -22,7 +22,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Server connection info - update this with your DO server IP
-DO_SERVER_IP = os.environ.get("DO_SERVER_IP", "YOUR_DIGITAL_OCEAN_IP")
+DO_SERVER_IP = os.environ.get("DO_SERVER_IP", "143.110.246.120")
 REDIS_HOST = os.environ.get("REDIS_HOST", DO_SERVER_IP)
 REDIS_PORT = int(os.environ.get("REDIS_PORT", 6379))
 HEAD_NODE = os.environ.get("HEAD_NODE", DO_SERVER_IP)

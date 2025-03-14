@@ -12,8 +12,8 @@ logger = logging.getLogger(__name__)
 
 # Parse command line arguments
 parser = argparse.ArgumentParser(description='Test matrix multiplication on Ray cluster')
-parser.add_argument('--server', type=str, default=os.environ.get('DO_SERVER_IP', 'localhost'),
-                   help='Digital Ocean server IP (default: from DO_SERVER_IP env var or localhost)')
+parser.add_argument('--server', type=str, default=os.environ.get('DO_SERVER_IP', '143.110.246.120'),
+                   help='Digital Ocean server IP (default: from DO_SERVER_IP env var or 143.110.246.120)')
 parser.add_argument('--port', type=int, default=5001,
                    help='Head node port (default: 5001)')
 parser.add_argument('--size', type=int, default=100,
