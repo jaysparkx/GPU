@@ -17,14 +17,14 @@ services:
       - "5001:5000"  # Flask API
       - "8265:8265"  # Ray Dashboard
       - "8000:8000"  # Ray Client Server
-      - "6380-6389:6380-6389"  # Changed Ray ports to avoid conflict with Redis
+      - "10001:10001"  # Ray client connection port
+      - "6380-6389:6380-6389"  # Additional ports for Ray
     depends_on:
       - redis
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - SERVER_IP=143.110.246.120
-      - RAY_ADDRESS=""  # Force starting a new Ray cluster
     volumes:
       - head_node_logs:/app/logs
     networks:
