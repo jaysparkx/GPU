@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:6.2
+    ports:
+      - "6379:6379"
+    command: redis-server --maxmemory 2gb --maxmemory-policy allkeys-lru
+    networks:
+      - ray-network
+
+  head-node:
+    build: ./head_node
+    ports:
+      - "5001:5000"  # Flask API
+      - "8265:8265"  # Ray Dashboard
+    depends_on:
+      - redis
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    networks:
+      - ray-network
+
+  provider-mac:
+    build: ./provider_mac
+    depends_on:
+      - head-node
+      - redis
+    environment:
+      - HEAD_NODE=head-node
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    networks:
+      - ray-network
+
+networks:
+  ray-network:
+    driver: bridge 

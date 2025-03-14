@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:6.2
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --maxmemory 2gb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    networks:
+      - ray-network
+
+  head-node:
+    build: ./head_node
+    restart: always
+    ports:
+      - "5001:5000"  # Flask API
+      - "8265:8265"  # Ray Dashboard
+      - "6379:6379"  # Ray Redis port
+    depends_on:
+      - redis
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - SERVER_IP=${DO_SERVER_IP}  # Will be set during deployment
+      - RAY_REDIS_PASSWORD=5241590000000000
+    volumes:
+      - head_node_logs:/app/logs
+    networks:
+      - ray-network
+
+networks:
+  ray-network:
+    driver: bridge
+
+volumes:
+  redis_data:
+  head_node_logs: 

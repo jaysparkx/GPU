@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  provider-mac:
+    build: ./provider_mac
+    environment:
+      - DO_SERVER_IP=YOUR_DIGITAL_OCEAN_IP  # Replace with your actual DO IP
+      - HEAD_NODE=YOUR_DIGITAL_OCEAN_IP     # Replace with your actual DO IP
+      - REDIS_HOST=YOUR_DIGITAL_OCEAN_IP    # Replace with your actual DO IP
+      - REDIS_PORT=6379
+      - RAY_REDIS_PASSWORD=5241590000000000
+    volumes:
+      - ./provider_mac/logs:/app/logs 
