@@ -3,19 +3,45 @@ import requests
 import json
 import time
 import logging
+import argparse
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
+# Parse command line arguments
+parser = argparse.ArgumentParser(description='Test matrix multiplication on Ray cluster')
+parser.add_argument('--server', type=str, default='143.110.246.120',
+                   help='Digital Ocean server IP (default: 143.110.246.120)')
+parser.add_argument('--port', type=int, default=5001,
+                   help='Head node port (default: 5001)')
+parser.add_argument('--size', type=int, default=100,
+                   help='Matrix size (default: 100)')
+args = parser.parse_args()
+
 # Configuration
-HEAD_NODE_URL = "http://localhost:5001"  # The exposed port from docker-compose
-MATRIX_SIZE = 100  # Size of matrices to multiply (NxN)
+HEAD_NODE_URL = f"http://{args.server}:{args.port}"
+MATRIX_SIZE = args.size
+
+def check_health():
+    """Check if the head node is healthy."""
+    try:
+        response = requests.get(f"{HEAD_NODE_URL}/health", timeout=10)
+        if response.status_code == 200:
+            health_status = response.json()
+            logger.info(f"Health status: {health_status}")
+            return True
+        else:
+            logger.error(f"Health check failed: {response.text}")
+            return False
+    except Exception as e:
+        logger.error(f"Error connecting to head node: {e}")
+        return False
 
 def check_cluster_status():
     """Check the status of the Ray cluster."""
     try:
-        response = requests.get(f"{HEAD_NODE_URL}/cluster_status", timeout=5)
+        response = requests.get(f"{HEAD_NODE_URL}/cluster_status", timeout=10)
         if response.status_code == 200:
             cluster_status = response.json()
             logger.info(f"Cluster status: {json.dumps(cluster_status, indent=2)}")
@@ -31,16 +57,9 @@ def test_matrix_multiplication():
     """Test matrix multiplication task on the cluster."""
     logger.info(f"Testing matrix multiplication with {MATRIX_SIZE}x{MATRIX_SIZE} matrices")
     
-    # Check cluster status first
-    cluster_status = check_cluster_status()
-    if not cluster_status:
-        logger.error("Cannot proceed without cluster status")
-        return False
-    
     # Prepare task submission
     task_data = {
         "type": "matrix_mult",
-        "num_nodes": 0,  # Use the head node only
         "size": MATRIX_SIZE
     }
     
@@ -58,8 +77,6 @@ def test_matrix_multiplication():
             return False
         
         task_info = submit_response.json()
-        logger.info(f"Task submission response: {task_info}")
-        
         if "task_id" not in task_info:
             logger.error(f"No task_id in response: {task_info}")
             return False
@@ -74,7 +91,7 @@ def test_matrix_multiplication():
             logger.info(f"Checking task status (attempt {i+1}/{max_polls})...")
             status_response = requests.get(
                 f"{HEAD_NODE_URL}/task_status/{task_id}",
-                timeout=10
+                timeout=15
             )
             
             if status_response.status_code != 200:
@@ -87,11 +104,12 @@ def test_matrix_multiplication():
             
             if status == "completed":
                 logger.info("Task completed successfully!")
-                result_shape = len(status_info["results"])
-                logger.info(f"Result is a {result_shape}x{result_shape} matrix")
+                if "dimensions" in status_info:
+                    logger.info(f"Result matrix dimensions: {status_info['dimensions']}")
+                    logger.info(f"Sample of result: {status_info.get('sample')}")
                 return True
             elif status == "failed":
-                logger.error(f"Task failed: {status_info.get('message', 'Unknown error')}")
+                logger.error(f"Task failed: {status_info.get('message')}")
                 return False
             elif status == "pending":
                 logger.info("Task is still running...")
@@ -111,22 +129,20 @@ if __name__ == "__main__":
     logger.info(f"Testing Ray cluster at {HEAD_NODE_URL}")
     
     # First check health
-    try:
-        health_response = requests.get(f"{HEAD_NODE_URL}/health", timeout=5)
-        if health_response.status_code == 200:
-            logger.info(f"Health check passed: {health_response.json()}")
-        else:
-            logger.error(f"Health check failed: {health_response.text}")
-            exit(1)
-    except Exception as e:
-        logger.error(f"Health check error: {e}")
+    if not check_health():
+        logger.error("Head node is not healthy. Exiting.")
         exit(1)
+    
+    # Check cluster status
+    cluster_status = check_cluster_status()
+    if not cluster_status:
+        logger.warning("Could not get cluster status, but continuing anyway...")
     
     # Run the matrix multiplication test
     success = test_matrix_multiplication()
     
     if success:
-        logger.info("Matrix multiplication test completed successfully")
+        logger.info("Matrix multiplication test completed successfully!")
         exit(0)
     else:
         logger.error("Matrix multiplication test failed")

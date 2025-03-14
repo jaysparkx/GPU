@@ -10,6 +10,7 @@ from ray.util import placement_group
 import torch
 import socket
 import requests
+from ray.util.client.server import serve_files
 
 app = Flask(__name__)
 
@@ -63,6 +64,16 @@ try:
     logger.info(f"Ray dashboard available at http://{get_public_ip()}:8265")
     logger.info(f"Node info: IP={ip}, Port={ray_port}")
     logger.info(f"Available resources: {ray.cluster_resources()}")
+    
+    # Start Ray Client server on port 10001
+    client_server_port = 10001
+    client_server_address = "0.0.0.0"
+    serve_files(
+        host=client_server_address,
+        port=client_server_port,
+        ray_client_server_retry_count=5
+    )
+    logger.info(f"Ray client server running at ray://{get_public_ip()}:{client_server_port}")
 except Exception as e:
     logger.error(f"Failed to initialize Ray: {e}")
     exit(1)
