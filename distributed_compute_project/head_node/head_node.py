@@ -50,6 +50,7 @@ try:
         ignore_reinit_error=True,
         num_cpus=os.cpu_count(),
         redis_password=os.environ.get("RAY_REDIS_PASSWORD", "5241590000000000"),
+        port=10001,  # Change from default 6379 to avoid conflict
         num_gpus=0  # Cloud servers typically don't have GPUs unless specifically provisioned
     )
     logger.info(f"Ray head node initialized. Dashboard at http://localhost:8265")

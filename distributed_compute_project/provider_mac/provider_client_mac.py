@@ -21,7 +21,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Server connection info - update this with your DO server IP
+# Server connection info
 DO_SERVER_IP = os.environ.get("DO_SERVER_IP", "143.110.246.120")
 REDIS_HOST = os.environ.get("REDIS_HOST", DO_SERVER_IP)
 REDIS_PORT = int(os.environ.get("REDIS_PORT", 6379))
@@ -79,7 +79,7 @@ def connect_to_ray():
             
         # Connect to existing Ray cluster
         ray.init(
-            address=f"{HEAD_NODE}:6379",
+            address=f"ray://{HEAD_NODE}:10001",  # Changed port to 10001
             _redis_password=RAY_REDIS_PASSWORD,
             ignore_reinit_error=True,
             logging_level=logging.INFO

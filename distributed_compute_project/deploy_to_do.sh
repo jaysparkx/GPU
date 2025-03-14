@@ -3,8 +3,8 @@
 # This script deploys the head node to Digital Ocean
 set -e
 
-# Export the server IP (replace with your actual Digital Ocean droplet IP)
-export DO_SERVER_IP=$(curl -s http://169.254.169.254/metadata/v1/interfaces/public/0/ipv4/address)
+# Set the Digital Ocean IP directly
+export DO_SERVER_IP=143.110.246.120
 echo "Server IP: $DO_SERVER_IP"
 
 # Create log directory
@@ -16,7 +16,7 @@ if [ -d .git ]; then
 fi
 
 # Build and start services
-docker-compose -f docker-compose.cloud.yml down
+docker-compose -f docker-compose.cloud.yml down --remove-orphans
 docker-compose -f docker-compose.cloud.yml build --no-cache
 docker-compose -f docker-compose.cloud.yml up -d
 

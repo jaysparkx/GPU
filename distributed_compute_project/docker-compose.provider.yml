@@ -4,9 +4,9 @@ services:
   provider-mac:
     build: ./provider_mac
     environment:
-      - DO_SERVER_IP=143.110.246.120  # Replace with your actual DO IP
-      - HEAD_NODE=143.110.246.120     # Replace with your actual DO IP
-      - REDIS_HOST=143.110.246.120    # Replace with your actual DO IP
+      - DO_SERVER_IP=143.110.246.120
+      - HEAD_NODE=143.110.246.120
+      - REDIS_HOST=143.110.246.120
       - REDIS_PORT=6379
       - RAY_REDIS_PASSWORD=5241590000000000
     volumes:
