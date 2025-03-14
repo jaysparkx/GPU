@@ -16,14 +16,15 @@ services:
     ports:
       - "5001:5000"  # Flask API
       - "8265:8265"  # Ray Dashboard
-      - "10001:10001"  # Ray client server port (instead of 6379)
+      - "8000:8000"  # Ray Client Server
+      - "6379-6389:6379-6389"  # Ray default ports range
     depends_on:
       - redis
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - SERVER_IP=143.110.246.120
-      - RAY_REDIS_PASSWORD=5241590000000000
+      - RAY_ADDRESS=""  # Force starting a new Ray cluster
     volumes:
       - head_node_logs:/app/logs
     networks:

@@ -42,17 +42,17 @@ def get_public_ip():
 
 # Initialize Ray head node
 try:
-    # Start Ray as a head node
+    # Start Ray as a head node (we need to remove address="auto")
     ray.init(
-        address="auto",  # This will start a new cluster
         _node_ip_address="0.0.0.0",  # Bind to all interfaces
         include_dashboard=True,
         dashboard_host="0.0.0.0",
         ignore_reinit_error=True,
         num_cpus=os.cpu_count(),
-        _redis_password=os.environ.get("RAY_REDIS_PASSWORD", "5241590000000000"),  # Note the underscore
-        # port parameter removed as it's not supported in this version
-        num_gpus=0  # Cloud servers typically don't have GPUs unless specifically provisioned
+        # Only use _redis_password with a specific port binding
+        # We need to properly start Ray as a head node
+        dashboard_port=8265,
+        num_gpus=0
     )
     logger.info(f"Ray head node initialized. Dashboard at http://localhost:8265")
     logger.info(f"Public IP for connection: {get_public_ip()}")
