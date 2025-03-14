@@ -42,20 +42,20 @@ def get_public_ip():
 
 # Initialize Ray head node
 try:
-    # Start Ray as a head node (we need to remove address="auto")
+    # Start Ray as a head node
     ray.init(
         _node_ip_address="0.0.0.0",  # Bind to all interfaces
         include_dashboard=True,
         dashboard_host="0.0.0.0",
+        dashboard_port=8265,
+        port=6380,  # Changed from default 6379 to avoid conflict
         ignore_reinit_error=True,
         num_cpus=os.cpu_count(),
-        # Only use _redis_password with a specific port binding
-        # We need to properly start Ray as a head node
-        dashboard_port=8265,
         num_gpus=0
     )
     logger.info(f"Ray head node initialized. Dashboard at http://localhost:8265")
     logger.info(f"Public IP for connection: {get_public_ip()}")
+    logger.info(f"Ray client server running on port 6380")
     logger.info(f"Available resources: {ray.cluster_resources()}")
 except Exception as e:
     logger.error(f"Failed to initialize Ray: {e}")

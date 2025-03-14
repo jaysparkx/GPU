@@ -17,7 +17,7 @@ services:
       - "5001:5000"  # Flask API
       - "8265:8265"  # Ray Dashboard
       - "8000:8000"  # Ray Client Server
-      - "6379-6389:6379-6389"  # Ray default ports range
+      - "6380-6389:6380-6389"  # Changed Ray ports to avoid conflict with Redis
     depends_on:
       - redis
     environment:
