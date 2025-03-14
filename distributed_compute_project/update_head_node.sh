@@ -6,8 +6,8 @@ DO_SERVER_IP=${DO_SERVER_IP:-"143.110.246.120"}
 echo "Server IP: $DO_SERVER_IP"
 
 # Make files executable
-chmod +x head_node_fix.py
 chmod +x provider_test.py
+chmod +x test_client.py
 
 # Copy the updated head_node.py to the server
 echo "Copying updated head_node.py to Digital Ocean server..."
@@ -19,11 +19,15 @@ ssh -o StrictHostKeyChecking=no root@${DO_SERVER_IP} "cd ~/GPU/distributed_compu
 
 # Wait for services to start
 echo "Waiting for services to start..."
-sleep 10
+sleep 30
 
 # Open port 10001 on the Digital Ocean server
 echo "Configuring firewall to allow Ray client server port..."
 ssh -o StrictHostKeyChecking=no root@${DO_SERVER_IP} "ufw allow 10001/tcp && ufw status"
+
+# Wait a bit more for the Ray client server to start
+echo "Waiting for Ray client server to initialize..."
+sleep 10
 
 # Test the connection to the Ray head node
 echo "Testing connection to Ray head node..."

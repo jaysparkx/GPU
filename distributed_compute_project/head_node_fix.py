@@ -2,7 +2,7 @@
 
 # This script adds Ray client server support to the head node
 import ray
-from ray.util.client.server import serve_files
+import ray.util.client.server as ray_server
 import logging
 import os
 import socket
@@ -30,11 +30,8 @@ if ray.is_initialized():
     
     # Start the Ray client server
     try:
-        serve_files(
-            host=client_server_address,
-            port=client_server_port,
-            ray_client_server_retry_count=5
-        )
+        # Use the correct Ray 2.3.1 API to start the client server
+        ray_server.serve("0.0.0.0:10001")
         logger.info(f"Ray client server running at ray://{get_public_ip()}:{client_server_port}")
     except Exception as e:
         logger.error(f"Failed to start Ray client server: {e}")

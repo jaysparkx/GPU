@@ -20,7 +20,7 @@ nano head_node.py
 Add the following import at the top of the file with the other imports:
 
 ```python
-from ray.util.client.server import serve_files
+import ray.util.client.server as ray_server
 ```
 
 Add the following code after Ray initialization (after the "Available resources" log):
@@ -29,11 +29,9 @@ Add the following code after Ray initialization (after the "Available resources"
 # Start Ray Client server on port 10001
 client_server_port = 10001
 client_server_address = "0.0.0.0"
-serve_files(
-    host=client_server_address,
-    port=client_server_port,
-    ray_client_server_retry_count=5
-)
+    
+# Start the Ray client server using the correct API for Ray 2.3.1
+ray_server.serve("0.0.0.0:10001")
 logger.info(f"Ray client server running at ray://{get_public_ip()}:{client_server_port}")
 ```
 
