@@ -77,10 +77,10 @@ def connect_to_ray():
             logger.error("Head node is not healthy")
             return False
             
-        # Connect to existing Ray cluster
+        # Connect to existing Ray cluster using the correct format for Ray 2.3.1
         ray.init(
-            address=f"ray://{HEAD_NODE}:10001",  # Changed port to 10001
-            _redis_password=RAY_REDIS_PASSWORD,
+            address=f"ray://{HEAD_NODE}:10001",
+            _redis_password=RAY_REDIS_PASSWORD,  # Note the underscore
             ignore_reinit_error=True,
             logging_level=logging.INFO
         )
